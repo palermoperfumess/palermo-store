@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="es" data-theme="light">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Palermo Store | Ofertas</title>
+    <meta name="description" content="Descuentos en tecnología, celulares y vapes." />
+    <link rel="icon" type="image/png" href="images/favicon.png?v=2" />
+    <link rel="stylesheet" href="style.css" />
+</head>
+
+<body data-page="ofertas">
+
+    <header class="site-header">
+        <div class="container nav">
+            <a class="brand" href="index.html" aria-label="Palermo Store">
+                <span style="font-weight:800; font-size:1.5rem;">PALERMO STORE</span>
+            </a>
+            <nav class="nav-links" aria-label="Principal">
+                <a href="index.html">Inicio</a>
+                <a href="locales.html">Tecnología</a>
+                <a href="gastronomia.html">Celulares</a>
+                <a href="entretenimientos.html">Relojes</a>
+                <a href="servicios.html">Perfumes </a>
+                <a href="ofertas.html">Ofertas</a>
+                <a href="contacto.html">Contacto</a>
+            </nav>
+            <div class="nav-actions">
+                <button id="theme-toggle" class="btn-icon" aria-pressed="false" title="Cambiar tema"
+                    aria-label="Cambiar tema">🌓</button>
+                <button id="burger" class="btn-icon burger" aria-expanded="false" aria-label="Abrir menú">☰</button>
+            </div>
+        </div>
+    </header>
+
+    <main id="contenido" class="section">
+        <div class="container stack reveal">
+            <h1>Ofertas del Mes</h1>
+            <div class="toolbar" role="region" aria-label="Filtros de ofertas">
+                <input id="search-ofertas" type="search" placeholder="Buscar producto..." aria-label="Buscar oferta" />
+                <input id="min-precio" type="number" step="1000" min="0" placeholder="Mín $" />
+                <input id="max-precio" type="number" step="1000" min="0" placeholder="Máx $" />
+            </div>
+
+            <section class="grid grid-3 results" aria-live="polite">
+                <article class="card" data-nombre="iPhone 13" data-precio="850000">
+                    <div class="media"><img src="images/camisa_oferta.png" alt="iPhone 13"></div>
+                    <div class="body">
+                        <h3>iPhone 13 128GB</h3>
+                        <p class="meta">Antes $950.000 • Ahora <strong>$850.000</strong> <span class="badge">Hot Sale</span>
+                        </p>
+                        <p>Sellado de fábrica, garantía oficial.</p>
+                    </div>
+                </article>
+                
+                <article class="card" data-nombre="Vape ElfBar" data-precio="15000">
+                    <div class="media"><img src="images/cafe_oferta.png" alt="Vape"></div>
+                    <div class="body">
+                        <h3>ElfBar BC5000</h3>
+                        <p class="meta"><strong>$15.000</strong> <span class="badge">2x1</span>
+                        </p>
+                        <p>Sabor Watermelon Ice. 5000 puffs.</p>
+                    </div>
+                </article>
+
+                <article class="card" data-nombre="Reloj Smart" data-precio="45000">
+                    <div class="media"><img src="images/medias_oferta.jpg" alt="Smartwatch"></div>
+                    <div class="body">
+                        <h3>Smartwatch T900</h3>
+                        <p class="meta">Antes $60.000 • Ahora <strong>$45.000</strong> <span class="badge">25%</span>
+                        </p>
+                        <p>Compatible con Android y iOS.</p>
+                    </div>
+                </article>
+
+                <article class="card" data-nombre="Perfume Sauvage" data-precio="120000">
+                    <div class="media"><img src="images/perfume_oferta.webp" alt="Sauvage Dior"></div>
+                    <div class="body">
+                        <h3>Dior Sauvage</h3>
+                        <p class="meta">Antes $150.000 • Ahora <strong>$120.000</strong> <span class="badge">20%</span>
+                        </p>
+                        <p>Eau de Toilette 100ml.</p>
+                    </div>
+                </article>
+
+                <article class="card" data-nombre="Auriculares Bluetooth" data-precio="25000">
+                    <div class="media"><img src="images/joyas_oferta.jpg" alt="Auriculares"></div>
+                    <div class="body">
+                        <h3>Auriculares Pro</h3>
+                        <p class="meta">Antes $35.000 • Ahora <strong>$25.000</strong> <span class="badge">Oferta</span>
+                        </p>
+                        <p>Cancelación de ruido activa.</p>
+                    </div>
+                </article>
+            </section>
+
+            <p id="ofertas-empty" class="empty" hidden>No hay resultados para esos filtros.</p>
+        </div>
+    </main>
+
+    <footer class="site-footer" role="contentinfo">
+        <div class="container footer-inner">
+            <div class="cluster">
+                <span class="chip">📍 Palermo Soho</span>
+                <a class="chip no-under" href="contacto.html">✉️ Contacto</a>
+            </div>
+            <p class="copyright">© <span id="year"></span> Palermo Store.</p>
+        </div>
+    </footer>
+
+    <script src="app.js"></script>
+</body>
+
+</html>

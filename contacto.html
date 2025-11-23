@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="es" data-theme="light">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Palermo Store | Contacto</title>
+    <meta name="description" content="Contactate con Nosotros para consultas, sugerencias o soporte." />
+    <link rel="stylesheet" href="style.css" />
+</head>
+
+<body data-page="contacto">
+
+    <header class="site-header">
+        <div class="container nav">
+            <a class="brand" href="index.html" aria-label="Palermo Store">
+                <span style="font-weight:800; font-size:1.5rem;">PALERMO STORE</span>
+            </a>
+            
+            <nav class="nav-links" aria-label="Principal">
+                <a href="index.html">Inicio</a>
+                <a href="locales.html">Tecnología</a>
+                <a href="gastronomia.html">Celulares</a>
+                <a href="entretenimientos.html">Relojes</a>
+                <a href="servicios.html">Perfumes </a>
+                <a href="ofertas.html">Ofertas</a>
+                <a href="contacto.html">Contacto</a>
+            </nav>
+            <div class="nav-actions">
+                <button id="theme-toggle" class="btn-icon" aria-pressed="false" title="Cambiar tema"
+                    aria-label="Cambiar tema">🌓</button>
+                <button id="burger" class="btn-icon burger" aria-expanded="false" aria-label="Abrir menú">☰</button>
+            </div>
+        </div>
+    </header>
+
+    <main id="contenido" class="section">
+        <div class="container grid grid-aside reveal">
+            <section class="stack">
+                <h1>Contacto</h1>
+                <p class="text-muted">Completá el formulario y te responderemos a la brevedad.</p>
+
+                <form id="contacto-form" novalidate>
+                    <div class="field">
+                        <label for="nombre">Nombre y apellido</label>
+                        <input type="text" id="nombre" name="nombre" required />
+                        <div class="error-msg" aria-live="polite"></div>
+                    </div>
+                    <div class="field">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" name="email" required />
+                        <div class="error-msg" aria-live="polite"></div>
+                    </div>
+                    <div class="field">
+                        <label for="telefono">Teléfono (opcional)</label>
+                        <input type="tel" id="telefono" name="telefono" />
+                        <div class="error-msg" aria-live="polite"></div>
+                    </div>
+                    <div class="field">
+                        <label for="motivo">Motivo</label>
+                        <select id="motivo" name="motivo" required>
+                            <option value="">Seleccionar...</option>
+                            <option value="Consulta general">Consulta general</option>
+                            <option value="Sugerencia">Sugerencia</option>
+                            <option value="Reclamo">Reclamo</option>
+                            <option value="Prensa y eventos">Prensa y eventos</option>
+                        </select>
+                        <div class="error-msg" aria-live="polite"></div>
+                    </div>
+                    <div class="field">
+                        <label for="mensaje">Mensaje</label>
+                        <textarea id="mensaje" name="mensaje" required></textarea>
+                        <div class="error-msg" aria-live="polite"></div>
+                    </div>
+                    <div class="field">
+                        <label>
+                            <input type="checkbox" name="acepto" /> Acepto los términos y condiciones
+                        </label>
+                        <div class="error-msg" aria-live="polite"></div>
+                    </div>
+                    <button class="btn primary" type="submit">Enviar</button>
+                </form>
+            </section>
+
+            <aside class="panel stack" id="chatbot">
+                <h2>Asistente</h2>
+                <div class="chat-window" id="chat-window" aria-live="polite" aria-relevant="additions"></div>
+                <form id="chat-form" class="chat-input-row" autocomplete="off">
+                    <input id="chat-input" type="text" name="chat" placeholder="Escribí una opción (ej: 1)" aria-label="Escribir opción del asistente" required />
+                    <button class="btn" type="submit">Enviar</button>
+                </form>
+                <p class="text-muted">Tip: respondé con el número o la palabra clave (por ejemplo, 1 o tecnologia).</p>
+            </aside>
+        </div>
+    </main>
+
+    <footer class="site-footer" role="contentinfo">
+        <div class="container footer-inner">
+            <div class="cluster">
+                <span class="chip">📍 Palermo Soho</span>
+             
+                <a class="chip no-under" href="contacto.html">✉️ Contacto</a>
+            </div>
+            <p class="copyright">© <span id="year"></span> Palermo Store.</p>
+        </div>
+    </footer>
+
+    <script src="app.js"></script>
+</body>
+
+</html>
