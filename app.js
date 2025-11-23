@@ -23,12 +23,16 @@ function isOnPage(id) {
     return (document.body.dataset.page === id) || (getPageSlug() === id);
 }
 
+function textMatch(text, query) { 
+    return text.toLowerCase().includes(query.toLowerCase()); 
+}
+
 /* =========================================
    2. CARRITO DE COMPRAS (Lógica + WhatsApp)
    ========================================= */
 const CART_KEY = 'palermo_cart_v1';
 let cart = storage.get(CART_KEY, []);
-const PHONE_NUMBER = '5491160065713'; // Tu número
+const PHONE_NUMBER = '5491160065713';
 
 function saveCart() {
     storage.set(CART_KEY, cart);
@@ -52,7 +56,6 @@ function getCartTotals() {
     let descuento = 0;
     let promoActiva = false;
 
-    // REGLA: 10% de descuento si llevas 3 o más productos
     if (cart.length >= 3) {
         descuento = total * 0.10;
         promoActiva = true;
@@ -75,7 +78,7 @@ function updateCartBadge() {
 }
 
 function injectFloatingCart() {
-    if (document.getElementById('fab-cart')) return; // Evitar duplicados
+    if (document.getElementById('fab-cart')) return;
     const div = document.createElement('div');
     div.innerHTML = `
         <button id="fab-cart" class="fab-cart" aria-label="Ver carrito">
@@ -296,7 +299,7 @@ function initGallery() {
 }
 
 /* =========================================
-   4. BUSCADOR DE PERFUMES
+   4. BUSCADORES (PERFUMES Y OFERTAS)
    ========================================= */
 function initPerfumesSearch() {
     if (!isOnPage('servicios')) return;
@@ -333,8 +336,36 @@ function initPerfumesSearch() {
     if (inputPrice) inputPrice.addEventListener('input', filterPerfumes);
 }
 
+// ESTA ES LA FUNCIÓN QUE FALTABA PARA LAS OFERTAS
+function initOfertas() {
+    if (!isOnPage('ofertas')) return;
+    const search = document.querySelector('#search-ofertas');
+    const min = document.querySelector('#min-precio');
+    const max = document.querySelector('#max-precio');
+    const empty = document.querySelector('#ofertas-empty');
+    const cards = Array.from(document.querySelectorAll('.card[data-precio]'));
+
+    function apply() {
+        const q = search?.value.trim() || '';
+        const minV = Number(min?.value || 0);
+        const maxV = Number(max?.value || 9999999); 
+        let visible = 0;
+        cards.forEach(card => {
+            const precio = Number(card.dataset.precio) || 0;
+            const nombre = card.dataset.nombre || '';
+            const ok = (!q || textMatch(nombre, q)) && precio >= minV && precio <= maxV;
+            card.style.display = ok ? '' : 'none';
+            if (ok) visible++;
+        });
+        if (empty) empty.hidden = visible !== 0;
+    }
+    
+    [search, min, max].forEach(el => el?.addEventListener('input', apply));
+    apply(); // Ejecutar al inicio
+}
+
 /* =========================================
-   5. CONTACTO A WHATSAPP
+   5. CONTACTO Y CHATBOT
    ========================================= */
 function initContacto() {
     if (!isOnPage('contacto')) return;
@@ -360,9 +391,6 @@ function initContacto() {
     });
 }
 
-/* =========================================
-   6. CHATBOT (RESTORED)
-   ========================================= */
 function initChatbot() {
     if (!isOnPage('contacto')) return;
     const win = document.querySelector('#chat-window');
@@ -375,28 +403,28 @@ function initChatbot() {
         '1) Tecnología\n' +
         '2) Celulares\n' +
         '3) Relojes\n' +
-        '4) Perfumes y Vapes\n' +
+        '4) Perfumes\n' +
         '5) Ofertas\n' +
         '6) Ubicación'
     );
 
     const responses = {
-        tech: 'Mirá nuestra sección de <a href="locales.html">Tecnología</a> para ver notebooks y accesorios.',
-        celulares: 'Encontrá iPhone y Androids en la sección <a href="gastronomia.html">Celulares</a>.',
+        tech: 'Mirá nuestra sección de <a href="locales.html">Tecnología</a>.',
+        celulares: 'Encontrá iPhone y Androids en <a href="gastronomia.html">Celulares</a>.',
         relojes: 'Nuestra colección de lujo está en <a href="entretenimientos.html">Relojes</a>.',
-        perfumes: 'Fragancias importadas y Vapes disponibles en <a href="servicios.html">Perfumes y Vapes</a>.',
+        perfumes: 'Fragancias importadas en <a href="servicios.html">Perfumes</a>.',
         ofertas: 'Aprovechá los descuentos en <a href="ofertas.html">Ofertas</a>.',
         location: 'Estamos en Palermo Soho, Buenos Aires. ¡Te esperamos!',
     };
 
     const mapToKey = (txt) => {
         const t = (txt || '').trim().toLowerCase();
-        if (['1', 'tecnologia', 'tech', 'computacion'].includes(t)) return 'tech';
-        if (['2', 'celulares', 'iphone', 'samsung'].includes(t)) return 'celulares';
-        if (['3', 'relojes', 'watch', 'smartwatch'].includes(t)) return 'relojes';
-        if (['4', 'perfumes', 'vapes', 'fragancias'].includes(t)) return 'perfumes';
+        if (['1', 'tecnologia', 'tech'].includes(t)) return 'tech';
+        if (['2', 'celulares', 'iphone'].includes(t)) return 'celulares';
+        if (['3', 'relojes', 'watch'].includes(t)) return 'relojes';
+        if (['4', 'perfumes', 'vapes'].includes(t)) return 'perfumes';
         if (['5', 'ofertas', 'promo'].includes(t)) return 'ofertas';
-        if (['6', 'ubicacion', 'direccion', 'donde'].includes(t)) return 'location';
+        if (['6', 'ubicacion', 'donde'].includes(t)) return 'location';
         return null;
     };
 
@@ -431,11 +459,11 @@ function initChatbot() {
         input.focus();
     });
 
-    showMenu();
+    showMenu(); // Iniciamos el chat
 }
 
 /* =========================================
-   7. INICIALIZACIÓN (DOMContentLoaded)
+   6. INICIALIZACIÓN
    ========================================= */
 document.addEventListener('DOMContentLoaded', () => {
     document.body.dataset.page = getPageSlug();
@@ -447,12 +475,13 @@ document.addEventListener('DOMContentLoaded', () => {
     initAccordion();
     initGallery();
     
-    // Inicializar E-commerce
+    // Inicializar E-commerce y Buscadores
     injectFloatingCart();
     injectAddButtons();
-    initPerfumesSearch();
+    initPerfumesSearch(); // Buscador en Perfumes
+    initOfertas();        // Buscador en Ofertas (¡Ahora sí funcionará!)
     initContacto();
     
-    // Inicializar Chatbot (Asegurado)
+    // Inicializar Chatbot
     initChatbot();
 });
