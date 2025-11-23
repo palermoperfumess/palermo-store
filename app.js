@@ -1,5 +1,5 @@
 /* =========================================
-   GESTIÓN DEL ALMACENAMIENTO Y UTILIDADES
+   1. UTILIDADES Y ALMACENAMIENTO
    ========================================= */
 const storage = {
     get(key, fallback = null) { try { return JSON.parse(localStorage.getItem(key)) ?? fallback; } catch { return fallback; } },
@@ -24,39 +24,35 @@ function isOnPage(id) {
 }
 
 /* =========================================
-   CARRITO DE COMPRAS (Lógica + WhatsApp)
+   2. CARRITO DE COMPRAS (Lógica + WhatsApp)
    ========================================= */
 const CART_KEY = 'palermo_cart_v1';
 let cart = storage.get(CART_KEY, []);
 const PHONE_NUMBER = '5491160065713'; // Tu número
 
-// Guardar carrito
 function saveCart() {
     storage.set(CART_KEY, cart);
     updateCartBadge();
 }
 
-// Agregar item
 function addToCart(product) {
     cart.push(product);
     saveCart();
     showToast(`¡${product.nombre} agregado!`);
 }
 
-// Eliminar item (por índice)
 function removeFromCart(index) {
     cart.splice(index, 1);
     saveCart();
-    renderCartModal(); // Re-renderizar si está abierto
+    renderCartModal(); 
 }
 
-// Calcular totales y promociones
 function getCartTotals() {
     let total = cart.reduce((sum, item) => sum + item.precio, 0);
     let descuento = 0;
     let promoActiva = false;
 
-    // REGLA DE PROMOCIÓN: 10% de descuento si llevas 3 o más productos
+    // REGLA: 10% de descuento si llevas 3 o más productos
     if (cart.length >= 3) {
         descuento = total * 0.10;
         promoActiva = true;
@@ -70,7 +66,6 @@ function getCartTotals() {
     };
 }
 
-// Actualizar el numerito rojo del carrito
 function updateCartBadge() {
     const badge = document.querySelector('#cart-count');
     if (badge) {
@@ -79,8 +74,8 @@ function updateCartBadge() {
     }
 }
 
-// Inyectar el botón flotante del carrito en el HTML
 function injectFloatingCart() {
+    if (document.getElementById('fab-cart')) return; // Evitar duplicados
     const div = document.createElement('div');
     div.innerHTML = `
         <button id="fab-cart" class="fab-cart" aria-label="Ver carrito">
@@ -90,17 +85,12 @@ function injectFloatingCart() {
     `;
     document.body.appendChild(div);
     updateCartBadge();
-    
     document.getElementById('fab-cart').addEventListener('click', openCartModal);
 }
 
-// Inyectar botones de "Agregar" en los productos existentes
 function injectAddButtons() {
-    // Selecciona tarjetas de productos (.producto y .card en ofertas)
     const items = document.querySelectorAll('.producto, .card[data-precio]');
-    
     items.forEach(item => {
-        // Verificar si ya tiene botón para no duplicar
         if(item.querySelector('.btn-add-cart')) return;
 
         const btn = document.createElement('button');
@@ -110,25 +100,19 @@ function injectAddButtons() {
         btn.style.width = '100%';
         
         btn.addEventListener('click', (e) => {
-            e.stopPropagation(); // Evitar abrir modal de imagen
+            e.stopPropagation(); 
             const nombre = item.dataset.nombre || item.querySelector('h3')?.textContent;
             const precio = Number(item.dataset.precio) || 0;
-            
             if(nombre && precio) {
                 addToCart({ nombre, precio });
             }
         });
 
-        // Insertar botón al final del elemento
-        if (item.classList.contains('body')) {
-             item.appendChild(btn); // Para estructura .card
-        } else {
-             item.appendChild(btn); // Para estructura .producto
-        }
+        if (item.classList.contains('body')) item.appendChild(btn); 
+        else item.appendChild(btn); 
     });
 }
 
-// Mostrar el Carrito (Modal)
 function openCartModal() {
     renderCartModal();
     const modal = document.getElementById('cart-modal');
@@ -140,11 +124,8 @@ function closeCartModal() {
     if(modal) modal.classList.remove('open');
 }
 
-// Renderizar contenido del carrito
 function renderCartModal() {
     let modal = document.getElementById('cart-modal');
-    
-    // Si no existe el modal, lo creamos
     if (!modal) {
         modal = document.createElement('div');
         modal.id = 'cart-modal';
@@ -153,12 +134,9 @@ function renderCartModal() {
     }
 
     const totals = getCartTotals();
-
-    let itemsHtml = '';
-    if (cart.length === 0) {
-        itemsHtml = '<p class="empty-msg">Tu carrito está vacío.</p>';
-    } else {
-        itemsHtml = '<ul class="cart-list">';
+    let itemsHtml = cart.length === 0 ? '<p class="empty-msg">Tu carrito está vacío.</p>' : '<ul class="cart-list">';
+    
+    if (cart.length > 0) {
         cart.forEach((item, index) => {
             itemsHtml += `
                 <li class="cart-item">
@@ -208,7 +186,6 @@ function renderCartModal() {
         </div>
     `;
 
-    // Manejar envío del formulario de checkout
     const form = modal.querySelector('#checkout-form');
     if(form) {
         form.addEventListener('submit', (e) => {
@@ -218,7 +195,6 @@ function renderCartModal() {
     }
 }
 
-// Finalizar Compra (Enviar a WhatsApp)
 function finalizeCheckout(totals) {
     const nombre = document.getElementById('cx-nombre').value;
     const direccion = document.getElementById('cx-direccion').value;
@@ -238,15 +214,10 @@ function finalizeCheckout(totals) {
     if(totals.promoActiva) mensaje += `\nDescuento: -$${totals.descuento}`;
     mensaje += `\n*TOTAL A PAGAR: $${totals.totalFinal}*`;
 
-    // Abrir WhatsApp
     const url = `https://wa.me/${PHONE_NUMBER}?text=${encodeURIComponent(mensaje)}`;
     window.open(url, '_blank');
-    
-    // Opcional: Limpiar carrito después de pedir
-    // cart = []; saveCart(); closeCartModal(); updateCartBadge();
 }
 
-// Notificación pequeña (Toast)
 function showToast(msg) {
     const toast = document.createElement('div');
     toast.className = 'toast';
@@ -257,9 +228,8 @@ function showToast(msg) {
 }
 
 /* =========================================
-   FUNCIONES EXISTENTES (Navegación, etc)
+   3. FUNCIONES UI (Nav, Reveal, Gallery)
    ========================================= */
-
 function initNav() {
     const menu = document.querySelector('.nav-links');
     const burger = document.querySelector('#burger');
@@ -277,9 +247,7 @@ function initNav() {
     const path = location.pathname.split('/').pop() || 'index.html';
     Array.from(document.querySelectorAll('.nav-links a')).forEach(a => {
         const href = a.getAttribute('href');
-        if (href.endsWith(path)) {
-            a.setAttribute('aria-current', 'page');
-        }
+        if (href.endsWith(path)) a.setAttribute('aria-current', 'page');
     });
 }
 
@@ -310,8 +278,63 @@ function initAccordion() {
     });
 }
 
+function initGallery() {
+    if (!isOnPage('gastronomia')) return;
+    on('click', '.gallery .item', (e, item) => {
+        if(e.target.classList.contains('btn-add-cart')) return;
+        const img = item.querySelector('img');
+        const caption = item.querySelector('figcaption')?.textContent || '';
+        const node = document.createElement('div');
+        node.innerHTML = `<img src="${img?.src || ''}" style="width:100%"><h3 style="text-align:center;margin-top:1rem;">${caption}</h3>`;
+        
+        const backdrop = document.createElement('div');
+        backdrop.className = 'modal-backdrop open';
+        backdrop.innerHTML = `<div class="modal"><header><button class="btn-icon" onclick="this.closest('.modal-backdrop').remove()">✕</button></header><div class="content"></div></div>`;
+        backdrop.querySelector('.content').appendChild(node);
+        document.body.appendChild(backdrop);
+    });
+}
+
 /* =========================================
-   CONTACTO A WHATSAPP (Modificado)
+   4. BUSCADOR DE PERFUMES
+   ========================================= */
+function initPerfumesSearch() {
+    if (!isOnPage('servicios')) return;
+    const inputSearch = document.querySelector('#search-perfume');
+    const selectGender = document.querySelector('#filter-genero');
+    const inputPrice = document.querySelector('#max-price-perfume');
+    const emptyMsg = document.querySelector('#perfumes-empty');
+    const cards = Array.from(document.querySelectorAll('#lista-perfumes .producto'));
+
+    function filterPerfumes() {
+        const texto = inputSearch.value.toLowerCase().trim();
+        const genero = selectGender.value; 
+        const precioMax = inputPrice.value ? Number(inputPrice.value) : 9999999;
+        let visibles = 0;
+
+        cards.forEach(card => {
+            const nombre = (card.dataset.nombre || '').toLowerCase();
+            const categoria = card.dataset.categoria || 'unisex';
+            const precio = Number(card.dataset.precio) || 0;
+            const matchNombre = !texto || nombre.includes(texto);
+            let matchGenero = (genero === 'todos') || (genero === categoria) || (categoria === 'unisex' && genero !== 'todos');
+            const matchPrecio = precio <= precioMax;
+
+            if (matchNombre && matchGenero && matchPrecio) {
+                card.style.display = ''; visibles++;
+            } else {
+                card.style.display = 'none';
+            }
+        });
+        if (emptyMsg) emptyMsg.hidden = visibles > 0;
+    }
+    if (inputSearch) inputSearch.addEventListener('input', filterPerfumes);
+    if (selectGender) selectGender.addEventListener('change', filterPerfumes);
+    if (inputPrice) inputPrice.addEventListener('input', filterPerfumes);
+}
+
+/* =========================================
+   5. CONTACTO A WHATSAPP
    ========================================= */
 function initContacto() {
     if (!isOnPage('contacto')) return;
@@ -320,7 +343,6 @@ function initContacto() {
 
     form.addEventListener('submit', (e) => {
         e.preventDefault();
-        
         const nombre = document.getElementById('nombre').value;
         const email = document.getElementById('email').value;
         const motivo = document.getElementById('motivo').value;
@@ -334,88 +356,103 @@ function initContacto() {
 
         const url = `https://wa.me/${PHONE_NUMBER}?text=${encodeURIComponent(whatsappMsg)}`;
         window.open(url, '_blank');
-        
         form.reset();
     });
 }
 
-function initGallery() {
-    if (!isOnPage('gastronomia')) return;
-    on('click', '.gallery .item', (e, item) => {
-        // Verificamos que no se haya clickeado el botón
-        if(e.target.classList.contains('btn-add-cart')) return;
-        
-        const img = item.querySelector('img');
-        const caption = item.querySelector('figcaption')?.textContent || '';
-        const node = document.createElement('div');
-        node.innerHTML = `<img src="${img?.src || ''}" style="width:100%"><h3 style="text-align:center;margin-top:1rem;">${caption}</h3>`;
-        
-        // Usar el modal simple para galería
-        const backdrop = document.createElement('div');
-        backdrop.className = 'modal-backdrop open';
-        backdrop.innerHTML = `<div class="modal"><header><button class="btn-icon" onclick="this.closest('.modal-backdrop').remove()">✕</button></header><div class="content"></div></div>`;
-        backdrop.querySelector('.content').appendChild(node);
-        document.body.appendChild(backdrop);
-    });
-}
+/* =========================================
+   6. CHATBOT (RESTORED)
+   ========================================= */
+function initChatbot() {
+    if (!isOnPage('contacto')) return;
+    const win = document.querySelector('#chat-window');
+    const form = document.querySelector('#chat-form');
+    const input = document.querySelector('#chat-input');
+    if (!win || !form || !input) return;
 
-function initPerfumesSearch() {
-    if (!isOnPage('servicios')) return;
+    const optionsText = (
+        'Elegí una opción:\n' +
+        '1) Tecnología\n' +
+        '2) Celulares\n' +
+        '3) Relojes\n' +
+        '4) Perfumes y Vapes\n' +
+        '5) Ofertas\n' +
+        '6) Ubicación'
+    );
 
-    const inputSearch = document.querySelector('#search-perfume');
-    const selectGender = document.querySelector('#filter-genero');
-    const inputPrice = document.querySelector('#max-price-perfume');
-    const emptyMsg = document.querySelector('#perfumes-empty');
-    const cards = Array.from(document.querySelectorAll('#lista-perfumes .producto'));
+    const responses = {
+        tech: 'Mirá nuestra sección de <a href="locales.html">Tecnología</a> para ver notebooks y accesorios.',
+        celulares: 'Encontrá iPhone y Androids en la sección <a href="gastronomia.html">Celulares</a>.',
+        relojes: 'Nuestra colección de lujo está en <a href="entretenimientos.html">Relojes</a>.',
+        perfumes: 'Fragancias importadas y Vapes disponibles en <a href="servicios.html">Perfumes y Vapes</a>.',
+        ofertas: 'Aprovechá los descuentos en <a href="ofertas.html">Ofertas</a>.',
+        location: 'Estamos en Palermo Soho, Buenos Aires. ¡Te esperamos!',
+    };
 
-    function filterPerfumes() {
-        const texto = inputSearch.value.toLowerCase().trim();
-        const genero = selectGender.value; 
-        const precioMax = inputPrice.value ? Number(inputPrice.value) : 9999999;
+    const mapToKey = (txt) => {
+        const t = (txt || '').trim().toLowerCase();
+        if (['1', 'tecnologia', 'tech', 'computacion'].includes(t)) return 'tech';
+        if (['2', 'celulares', 'iphone', 'samsung'].includes(t)) return 'celulares';
+        if (['3', 'relojes', 'watch', 'smartwatch'].includes(t)) return 'relojes';
+        if (['4', 'perfumes', 'vapes', 'fragancias'].includes(t)) return 'perfumes';
+        if (['5', 'ofertas', 'promo'].includes(t)) return 'ofertas';
+        if (['6', 'ubicacion', 'direccion', 'donde'].includes(t)) return 'location';
+        return null;
+    };
 
-        let visibles = 0;
-
-        cards.forEach(card => {
-            const nombre = (card.dataset.nombre || '').toLowerCase();
-            const categoria = card.dataset.categoria || 'unisex';
-            const precio = Number(card.dataset.precio) || 0;
-
-            const matchNombre = !texto || nombre.includes(texto);
-            let matchGenero = false;
-            if (genero === 'todos') matchGenero = true;
-            else if (genero === categoria) matchGenero = true;
-            else if (categoria === 'unisex' && genero !== 'todos') matchGenero = true;
-
-            const matchPrecio = precio <= precioMax;
-
-            if (matchNombre && matchGenero && matchPrecio) {
-                card.style.display = ''; visibles++;
-            } else {
-                card.style.display = 'none';
-            }
-        });
-
-        if (emptyMsg) emptyMsg.hidden = visibles > 0;
+    function addMsg(text, from = 'bot', asHTML = false) {
+        const div = document.createElement('div');
+        div.className = `chat-msg ${from === 'user' ? 'from-user' : 'from-bot'}`;
+        if (asHTML) div.innerHTML = text; else div.textContent = text;
+        win.appendChild(div);
+        win.scrollTop = win.scrollHeight;
     }
 
-    if (inputSearch) inputSearch.addEventListener('input', filterPerfumes);
-    if (selectGender) selectGender.addEventListener('change', filterPerfumes);
-    if (inputPrice) inputPrice.addEventListener('input', filterPerfumes);
+    function showMenu() {
+        addMsg('¡Hola! Soy el asistente de Palermo Store.');
+        addMsg(optionsText);
+    }
+
+    form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const val = input.value;
+        if (!val.trim()) return;
+        addMsg(val, 'user');
+        const key = mapToKey(val);
+        if (!key) {
+            addMsg('Opción no entendida. Probá con el número.');
+            addMsg(optionsText);
+        } else {
+            addMsg(responses[key], 'bot', true);
+            addMsg('¿Algo más?');
+            addMsg(optionsText);
+        }
+        input.value = '';
+        input.focus();
+    });
+
+    showMenu();
 }
 
-// Inicialización General
+/* =========================================
+   7. INICIALIZACIÓN (DOMContentLoaded)
+   ========================================= */
 document.addEventListener('DOMContentLoaded', () => {
     document.body.dataset.page = getPageSlug();
     Array.from(document.querySelectorAll('#year')).forEach(el => el.textContent = new Date().getFullYear());
 
+    // Inicializar componentes
     initNav();
     initReveal();
     initAccordion();
-    initGallery(); // Galería ahora respeta el botón de compra
+    initGallery();
     
-    // Funcionalidades de E-commerce
-    injectFloatingCart(); // Crea el botón flotante
-    injectAddButtons();   // Agrega botones a los productos
+    // Inicializar E-commerce
+    injectFloatingCart();
+    injectAddButtons();
     initPerfumesSearch();
-    initContacto();       // Contacto ahora envía WhatsApp
+    initContacto();
+    
+    // Inicializar Chatbot (Asegurado)
+    initChatbot();
 });
