@@ -911,3 +911,56 @@ input:focus, select:focus, textarea:focus {
 .toast.show {
     transform: translateX(-50%) translateY(0);
 }
+/* CHATBOT FIX VISUAL */
+.chat-window {
+    background: #f8fafc; /* Gris muy claro para que se note la caja */
+    border: 1px solid #cbd5e1;
+    border-radius: var(--radius-sm);
+    padding: var(--space-4);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    height: 450px; /* Altura controlada */
+    overflow-y: auto;
+}
+
+.chat-msg {
+    max-width: 80%;
+    padding: 0.75rem 1rem;
+    border-radius: 12px;
+    font-size: 0.95rem;
+    line-height: 1.4;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+}
+
+/* Mensaje del BOT (Gris oscuro / Texto Negro) */
+.chat-msg.from-bot {
+    background: #e2e8f0;
+    color: #0f172a;
+    border-bottom-left-radius: 2px;
+    align-self: flex-start;
+}
+
+/* Mensaje del USUARIO (Negro / Texto Blanco) */
+.chat-msg.from-user {
+    background: #000000;
+    color: #ffffff;
+    border-bottom-right-radius: 2px;
+    align-self: flex-end;
+}
+
+/* Input del chat */
+.chat-input-row {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 1rem;
+}
+
+.chat-input-row input {
+    flex: 1;
+    border: 2px solid #e2e8f0;
+}
+
+.chat-input-row input:focus {
+    border-color: #000000;
+}
