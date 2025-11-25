@@ -5,90 +5,143 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Palermo Store | Relojes</title>
-    <meta name="description"
-    content="Colección de relojes de alta gama, smartwatches y ediciones limitadas en Palermo Store." />
-    <link rel="icon" type="image/png" href="images/favicon.png?v=2" />
+    <meta name="description" content="Colección de relojes de alta gama en Palermo Store." />
     <link rel="stylesheet" href="style.css" />
+
     <style>
-        /* Estilos específicos inline para asegurar que el carrusel se vea bien 
-           si no tienes el CSS original de la plantilla */
+        /* Contenedor Principal */
         .carousel {
             position: relative;
-            overflow: hidden;
-            margin: 2rem 0;
-            border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-        }
-        .carousel-container {
-            overflow: hidden;
-        }
-        .carousel-track {
-            display: flex;
-            transition: transform 0.5s ease-in-out;
             width: 100%;
+            max-width: 1000px; /* Ancho máximo */
+            height: 500px;     /* Altura FIJA necesaria para que no colapse */
+            margin: 0 auto;
+            border-radius: 15px;
+            overflow: hidden; /* Oculta lo que se sale del cuadro */
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+            background: #000; /* Fondo negro */
         }
-        .carousel-slide {
-            min-width: 100%;
+
+        /* La pista que se mueve */
+        .carousel-track-container {
+            background: #0f172a; 
+            height: 100%;
+            width: 100%;
             position: relative;
         }
-        .carousel-slide img {
-            width: 100%;
-            height: 400px; /* Altura fija para el banner */
-            object-fit: cover;
-            display: block;
+
+        .carousel-track {
+            padding: 0;
+            margin: 0;
+            list-style: none;
+            position: relative;
+            height: 100%;
+            transition: transform 0.5s ease-in-out;
         }
+
+        /* EL FIX IMPORTANTE: position absolute para que el JS las ponga en fila */
+        .carousel-slide {
+            position: absolute; 
+            top: 0;
+            bottom: 0;
+            width: 100%;
+            height: 100%; /* Ocupa todo el alto */
+            display: flex; /* Centrar contenido */
+            align-items: center;
+            justify-content: center;
+            /* Fondo degradado */
+            background: radial-gradient(circle at center, #334155 0%, #0f172a 100%);
+        }
+
+        /* Imágenes */
+        .carousel-slide img {
+            width: auto;
+            max-width: 85%;
+            height: 75%;
+            object-fit: contain; /* Asegura que se vea el reloj entero */
+            filter: drop-shadow(0 10px 15px rgba(0,0,0,0.6));
+            z-index: 1;
+        }
+
+        /* Texto */
         .carousel-caption {
             position: absolute;
             bottom: 0;
             left: 0;
-            right: 0;
-            background: rgba(0, 0, 0, 0.7);
-            color: #fff;
-            padding: 1.5rem;
+            width: 100%;
+            padding: 20px 40px;
+            background: linear-gradient(to top, rgba(0,0,0,0.95), rgba(0,0,0,0));
+            color: white;
             text-align: center;
+            z-index: 2;
         }
-        .carousel-caption h3 { margin: 0 0 0.5rem 0; color: #fff; }
-        .carousel-caption p { margin: 0; opacity: 0.9; }
-        
-        .carousel button.prev, .carousel button.next {
+
+        .carousel-caption h3 {
+            margin: 0 0 5px 0;
+            font-size: 1.8rem;
+            color: #fff !important;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.8);
+        }
+
+        .carousel-caption p {
+            margin: 0;
+            font-size: 1.1rem;
+            color: #ddd !important;
+        }
+
+        /* Botones */
+        .carousel .prev, .carousel .next {
             position: absolute;
             top: 50%;
             transform: translateY(-50%);
-            background: rgba(255,255,255,0.8);
-            border: none;
+            background: rgba(255, 255, 255, 0.15);
+            color: white;
+            border: 1px solid rgba(255,255,255,0.2);
+            width: 50px;
+            height: 50px;
             border-radius: 50%;
-            width: 40px;
-            height: 40px;
+            font-size: 24px;
             cursor: pointer;
-            font-size: 1.2rem;
             z-index: 10;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: 0.3s;
         }
-        .carousel button.prev { left: 1rem; }
-        .carousel button.next { right: 1rem; }
-        
+        .carousel .prev:hover, .carousel .next:hover { background: rgba(255,255,255,1); color: #000; }
+        .carousel .prev { left: 20px; }
+        .carousel .next { right: 20px; }
+
+        /* Indicadores (Puntitos) */
         .carousel-indicators {
+            position: absolute;
+            bottom: 100px; /* Encima del texto */
+            left: 0; 
+            right: 0;
             display: flex;
             justify-content: center;
-            gap: 0.5rem;
-            padding: 1rem;
+            gap: 12px;
+            z-index: 5;
         }
         .carousel-indicators button {
-            width: 10px;
-            height: 10px;
+            width: 12px;
+            height: 12px;
             border-radius: 50%;
+            background: rgba(255,255,255,0.4);
             border: none;
-            background: #ccc;
-            padding: 0;
             cursor: pointer;
+            padding: 0;
         }
         .carousel-indicators button[aria-current="true"] {
-            background: var(--primary, #007bff);
+            background: #fff;
+            transform: scale(1.3);
         }
     </style>
 </head>
 
 <body data-page="entretenimientos"> 
-<header class="site-header">
+
+    <header class="site-header">
         <div class="container nav">
             <a class="brand" href="index.html" aria-label="Palermo Store">
                 <span style="font-weight:800; font-size:1.5rem;">PALERMO STORE</span>
@@ -103,8 +156,7 @@
                 <a href="contacto.html">Contacto</a>
             </nav>
             <div class="nav-actions">
-                <button id="theme-toggle" class="btn-icon" aria-pressed="false" title="Cambiar tema"
-                    aria-label="Cambiar tema">🌓</button>
+                <button id="theme-toggle" class="btn-icon" aria-pressed="false" title="Cambiar tema">🌓</button>
                 <button id="burger" class="btn-icon burger" aria-expanded="false" aria-label="Abrir menú">☰</button>
             </div>
         </div>
@@ -116,33 +168,40 @@
             <p class="lead">Precisión, elegancia y tecnología en tu muñeca.</p>
 
             <div class="carousel" aria-label="Relojes destacados">
-                <div class="carousel-container">
+                <button class="prev" aria-label="Anterior">❮</button>
+
+                <div class="carousel-track-container">
                     <div class="carousel-track">
-                        <div class="carousel-slide">
-                            <img src="images/hero3.jpg" alt="Reloj Clásico de Lujo" />
+                        
+                        <div class="carousel-slide current-slide">
+                            <img src="https://modwatches.netlify.app/img/relojgmtmaster1.png" alt="Seiko Mod Bruce Wayne" />
                             <div class="carousel-caption">
-                                <h3>Colección Executive</h3>
-                                <p>Diseño atemporal con malla de cuero genuino y cristal de zafiro.</p>
+                                <h3>Seiko Mod GMT Master II "Bruce Wayne"</h3>
+                                <p>Diseño atemporal con malla de cuero genuino.</p>
                             </div>
                         </div>
+
                         <div class="carousel-slide">
-                             <img src="images/hero1.jpg" alt="Smartwatch Deportivo" />
+                            <img src="https://modwatches.netlify.app/img/relojgmtmaster3.png" alt="Seiko Mod Batman" />
                             <div class="carousel-caption">
-                                <h3>Serie Sport Tech</h3>
-                                <p>Monitoreo cardíaco, GPS integrado y resistencia al agua.</p>
+                                <h3>Seiko Mod GMT Master II "Batman"</h3>
+                                <p>Edición especial azul y negro.</p>
                             </div>
                         </div>
+
                         <div class="carousel-slide">
-                             <img src="images/joyas_oferta.jpg" alt="Edición Gold" />
+                            <img src="https://modwatches.netlify.app/img/relojdatejustydaydate5.png" alt="Seiko Mod Wimbledon" />
                             <div class="carousel-caption">
-                                <h3>Gold Edition</h3>
-                                <p>Elegancia pura bañada en oro de 18k.</p>
+                                <h3>Seiko Mod Datejust "Wimbledon"</h3>
+                                <p>Esfera verde oliva y números romanos.</p>
                             </div>
                         </div>
+
                     </div>
                 </div>
-                <button class="prev" aria-label="Anterior">❮</button>
+                
                 <button class="next" aria-label="Siguiente">❯</button>
+
                 <div class="carousel-indicators">
                     <button aria-label="Slide 1" aria-current="true"></button>
                     <button aria-label="Slide 2" aria-current="false"></button>
@@ -150,141 +209,23 @@
                 </div>
             </div>
 
-                 <section id="productos" class="stack">
-                <div id="lista-perfumes" class="grid grid-3">
-                    
-                   <div class="producto" data-categoria="hombre" data-nombre="Liquid Brun" data-precio="78000">
-                        <img src="https://http2.mlstatic.com/D_Q_NP_852085-MLA80071541612_102024-O.webp" alt="Liquid Brun">
-                        <h3>Liquid Brun</h3>
-                        <p class="precio">Botella 100ml: $78000</p>
-                   </div>
-                   <div class="producto" data-categoria="hombre" data-nombre="Hawas Black" data-precio="72000">
-                        <img src="https://d22fxaf9t8d39k.cloudfront.net/d4f256ba89932cfc21fd0fa7d8c13c80d65b40cb9a06428bba7813bfcc037d2d108925.webp" alt="Hawas Black">
-                        <h3>Hawas Black</h3>
-                        <p class="precio">Botella 100ml: $72000</p>
-                        <p class="decant">Decant 5ml: $9500</p>
-                   </div>
-                   <div class="producto" data-categoria="hombre" data-nombre="Hawas for Him" data-precio="62000">
-                        <img src="https://http2.mlstatic.com/D_609475-MLU77667701668_072024-C.jpg" alt="Hawas for Him">
-                        <h3>Hawas for Him</h3>
-                        <p class="precio">Botella 100ml: $62000</p>
-                        <p class="decant">Decant 5ml: $9000</p>
-                   </div>
-                   <div class="producto" data-categoria="hombre" data-nombre="Hawas Ice" data-precio="70000">
-                        <img src="https://d3cdlnm7te7ky2.cloudfront.net/media/catalog/product/cache/1f1b8d9a1b49678555bea203c2f52e39/1/5/155854-b-hawas-ice-men-edp-100ml.jpg" alt="Hawas Ice">
-                        <h3>Hawas Ice</h3>
-                        <p class="precio">Botella 100ml: $70000</p>
-                   </div>
-                   <div class="producto" data-categoria="hombre" data-nombre="Hawas Elixir" data-precio="73000">
-                        <img src="https://fimgs.net/mdimg/perfume-thumbs/375x500.110808.jpg" alt="Hawas Elixir">
-                        <h3>Hawas Elixir</h3>
-                        <p class="precio">Botella 100ml: $73000</p>
-                   </div>
-                   <div class="producto" data-categoria="hombre" data-nombre="Bharara King" data-precio="94000">
-                        <img src="https://http2.mlstatic.com/D_NQ_NP_991070-MLA81953006706_022025-O.webp" alt="Bharara King">
-                        <h3>Bharara King</h3>
-                        <p class="precio">Botella 100ml: $94000</p>
-                   </div>
-                   
-                   <div class="producto" data-categoria="unisex" data-nombre="Amber Oud" data-precio="92000">
-                        <img src="https://http2.mlstatic.com/D_843651-MLU76296948587_052024-C.jpg" alt="Amber Oud">
-                        <h3>Amber Oud</h3>
-                        <p class="precio">Botella 100ml: $92000</p>
-                   </div>
-                   
-                   <div class="producto" data-categoria="hombre" data-nombre="9PM" data-precio="63000">
-                        <img src="https://http2.mlstatic.com/D_NQ_NP_855959-MLA53669241732_022023-O.webp" alt="9PM">
-                        <h3>9PM</h3>
-                        <p class="precio">Botella 100ml: $63000</p>
-                   </div>
-                   <div class="producto" data-categoria="hombre" data-nombre="9PM Rebel" data-precio="69000">
-                        <img src="https://fimgs.net/mdimg/perfume/o.99238.jpg" alt="9PM Rebel">
-                        <h3>9PM Rebel</h3>
-                        <p class="precio">Botella 100ml: $69000</p>
-                   </div>
-                   <div class="producto" data-categoria="unisex" data-nombre="Art Of Arabia 1" data-precio="69000">
-                        <img src="https://u.makeup.com.ua/k/k8/k8hxu147fzcl.jpg" alt="Art of Arabia 1">
-                        <h3>Art Of Arabia 1</h3>
-                        <p class="precio">Botella 100ml: $69000</p>
-                   </div>
-                   <div class="producto" data-categoria="unisex" data-nombre="Honor and Glory" data-precio="59000">
-                        <img src="https://simplicityar.vtexassets.com/arquivos/ids/187568/242461_edp-lattafa-badee-al-oud-honor-glory-x-100-ml_imagen-2.jpg?v=638793894569830000" alt="Honor and Glory">
-                        <h3>Honor and Glory</h3>
-                        <p class="precio">Botella 100ml: $59000</p>
-                   </div>
-                   <div class="producto" data-categoria="hombre" data-nombre="Club de Nuit Iconic" data-precio="72000">
-                        <img src="https://fimgs.net/mdimg/perfume/o.78475.jpg" alt="Club de Nuit Iconic">
-                        <h3>Club de Nuit Iconic</h3>
-                        <p class="precio">Botella 100ml: $72000</p>
-                   </div>
-                   <div class="producto" data-categoria="hombre" data-nombre="Club de Nuit Urban Man" data-precio="69000">
-                        <img src="https://acdn-us.mitiendanube.com/stores/004/878/940/products/03-a-36b6bee3b801d1e1b817214141637364-1024-1024.jpg" alt="Club de Nuit Urban Man Elixir">
-                        <h3>Club de Nuit Urban</h3>
-                        <p class="precio">Botella 100ml: $69000</p>
-                   </div>
-                   <div class="producto" data-categoria="unisex" data-nombre="Lataffa Hayaati" data-precio="54000">
-                        <img src="https://acdn-us.mitiendanube.com/stores/004/407/494/products/hayaati-c6426e81b3e9f6bd3b17101000099209-640-0.webp" alt="Lataffa Hayaati">
-                        <h3>Lataffa Hayaati</h3>
-                        <p class="precio">Botella 100ml: $54000</p>
-                   </div>
-                   <div class="producto" data-categoria="hombre" data-nombre="Ishq Al Shuyukh Gold" data-precio="62000">
-                        <img src="https://perfumescardales.com.ar/wp-content/uploads/2023/06/ishq-gold-1.jpg" alt="Ishq Al Shuyukh Gold">
-                        <h3>Ishq Gold</h3>
-                        <p class="precio">Botella 100ml: $62000</p>
-                   </div>
-                   <div class="producto" data-categoria="hombre" data-nombre="Jean Lowe Immortal" data-precio="52000">
-                        <img src="https://http2.mlstatic.com/D_NQ_NP_794813-MLA82979797869_032025-O.webp" alt="Jean Lowe Immortal">
-                        <h3>Jean Lowe Immortal</h3>
-                        <p class="precio">Botella 100ml: $52000</p>
-                   </div>
-                   <div class="producto" data-categoria="unisex" data-nombre="Khamrah Qahwa" data-precio="67000">
-                        <img src="https://d3cdlnm7te7ky2.cloudfront.net/media/catalog/product/cache/1f1b8d9a1b49678555bea203c2f52e39/1/5/155511-b-khamrah-qahwa-edp-100ml.jpg" alt="Khamrah Qahwa">
-                        <h3>Khamrah Qahwa</h3>
-                        <p class="precio">Botella 100ml: $67000</p>
-                   </div>
-                   <div class="producto" data-categoria="hombre" data-nombre="Lataffa Kingdom" data-precio="71000">
-                        <img src="https://acdn-us.mitiendanube.com/stores/003/226/824/products/1024-x-1024-px-2025-05-08t201634-631-f0b893b56cadb00ad417467461990687-1024-1024.jpg" alt="Lataffa Kingdom">
-                        <h3>Lataffa Kingdom</h3>
-                        <p class="precio">Botella 100ml: $71000</p>
-                   </div>
-                   
-                   <div class="producto" data-categoria="mujer" data-nombre="Lataffa Yara Rose" data-precio="64000">
-                        <img src="https://layla-andco.com/cdn/shop/files/DE4B3489-D89C-4E1B-AC03-DCA2FB1D1378.jpg?v=1710768589" alt="Lataffa Yara Rose">
-                        <h3>Lataffa Yara Rose</h3>
-                        <p class="precio">Botella 100ml: $64000</p>
-                   </div>
-                   
-                   <div class="producto" data-categoria="hombre" data-nombre="Supremacy Not Only Intense" data-precio="73000">
-                        <img src="https://http2.mlstatic.com/D_NQ_NP_886355-MLU74668053191_022024-O.webp" alt="Supremacy Not Only Intense">
-                        <h3>Supremacy Intense</h3>
-                        <p class="precio">Botella 100ml: $73000</p>
-                   </div>
-                   <div class="producto" data-categoria="unisex" data-nombre="Vintage Radio" data-precio="69000">
-                        <img src="https://http2.mlstatic.com/D_NQ_NP_706392-CBT83047220019_032025-O.webp" alt="Vintage Radio">
-                        <h3>Vintage Radio</h3>
-                        <p class="precio">Botella 100ml: $69000</p>
-                   </div>
-                   <div class="producto" data-categoria="hombre" data-nombre="Lataffa Asad" data-precio="58000">
-                        <img src="https://acdn-us.mitiendanube.com/stores/004/407/494/products/asad-d1a6c449c4071fd13017149465284044-480-0.webp" alt="Lataffa Asad">
-                        <h3>Lataffa Asad</h3>
-                        <p class="precio">Botella 100ml: $58000</p>
-                   </div>
-                   <div class="producto" data-categoria="hombre" data-nombre="Asad Bourbon" data-precio="66000">
-                        <img src="https://acdn-us.mitiendanube.com/stores/004/407/494/products/asad-bourbon-8333192b3cc78bfa1017364419270910-1024-1024.jpg" alt="Asad Bourbon">
-                        <h3>Asad Bourbon</h3>
-                        <p class="precio">Botella 100ml: $66000</p>
+            <section id="productos" class="stack mt-6">
+                <div id="lista-relojes" class="grid grid-3">
+                   <div class="producto" data-nombre="Reloj Clasico" data-precio="45000">
+                        <img src="https://modwatches.netlify.app/img/relojgmtmaster1.png" alt="Reloj">
+                        <h3>Reloj Clásico</h3>
+                        <p class="precio">$45.000</p>
                    </div>
                 </div>
-                <p id="perfumes-empty" class="empty" hidden>No encontramos perfumes con esos criterios.</p>
             </section>
+
         </div>
     </main>
 
     <footer class="site-footer" role="contentinfo">
         <div class="container footer-inner">
             <div class="cluster">
-                <span class="chip">📍  Palermo Soho</span>
-               
+                <span class="chip">📍 Palermo Soho</span>
                 <a class="chip no-under" href="contacto.html">✉️ Contacto</a>
             </div>
             <p class="copyright">© <span id="year"></span> Palermo Store.</p>
@@ -293,5 +234,4 @@
 
     <script src="app.js"></script>
 </body>
-
 </html>
