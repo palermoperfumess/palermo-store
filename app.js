@@ -94,25 +94,42 @@ function injectFloatingCart() {
 function injectAddButtons() {
     const items = document.querySelectorAll('.producto, .card[data-precio]');
     items.forEach(item => {
-        if(item.querySelector('.btn-add-cart')) return;
+        if(item.querySelector('.btn-actions-container')) return;
 
-        const btn = document.createElement('button');
-        btn.className = 'btn primary btn-add-cart';
-        btn.textContent = 'Agregar al Carrito';
-        btn.style.marginTop = '10px';
-        btn.style.width = '100%';
-        
-        btn.addEventListener('click', (e) => {
+        const container = document.createElement('div');
+        container.className = 'btn-actions-container';
+        container.style.marginTop = '10px';
+        container.style.display = 'flex';
+        container.style.flexDirection = 'column';
+        container.style.gap = '5px';
+
+        const btnCart = document.createElement('button');
+        btnCart.className = 'btn primary btn-add-cart';
+        btnCart.textContent = 'Agregar al Carrito';
+        btnCart.style.width = '100%';
+        btnCart.addEventListener('click', (e) => {
             e.stopPropagation(); 
             const nombre = item.dataset.nombre || item.querySelector('h3')?.textContent;
             const precio = Number(item.dataset.precio) || 0;
-            if(nombre && precio) {
-                addToCart({ nombre, precio });
-            }
+            if(nombre && precio) addToCart({ nombre, precio });
         });
+        container.appendChild(btnCart);
 
-        if (item.classList.contains('body')) item.appendChild(btn); 
-        else item.appendChild(btn); 
+        const mpLink = item.dataset.mp; 
+        if (mpLink) {
+            const btnMP = document.createElement('button');
+            btnMP.className = 'btn mp-btn';
+            btnMP.textContent = 'Pagar con Mercado Pago';
+            btnMP.style.width = '100%';
+            btnMP.addEventListener('click', (e) => {
+                e.stopPropagation();
+                window.open(mpLink, '_blank');
+            });
+            container.appendChild(btnMP);
+        }
+
+        if (item.classList.contains('body')) item.appendChild(container); 
+        else item.appendChild(container); 
     });
 }
 
@@ -231,7 +248,93 @@ function showToast(msg) {
 }
 
 /* =========================================
-   3. FUNCIONES UI (Nav, Reveal, Gallery)
+   3. CARRUSEL (Esta es la función que faltaba)
+   ========================================= */
+function initCarousel() {
+    if (!isOnPage('entretenimientos')) return;
+    
+    const track = document.querySelector('.carousel-track');
+    const slides = Array.from(document.querySelectorAll('.carousel-slide'));
+    const nextButton = document.querySelector('.carousel .next');
+    const prevButton = document.querySelector('.carousel .prev');
+    const dotsNav = document.querySelector('.carousel-indicators');
+    const dots = Array.from(dotsNav.children);
+
+    if (!track || slides.length === 0) return;
+
+    const slideWidth = slides[0].getBoundingClientRect().width;
+
+    // Acomodar slides uno al lado del otro
+    const setSlidePosition = (slide, index) => {
+        slide.style.left = slideWidth * index + 'px';
+    };
+    slides.forEach(setSlidePosition);
+
+    const moveToSlide = (track, currentSlide, targetSlide) => {
+        track.style.transform = 'translateX(-' + targetSlide.style.left + ')';
+        currentSlide.classList.remove('current-slide');
+        targetSlide.classList.add('current-slide');
+    }
+
+    const updateDots = (currentDot, targetDot) => {
+        currentDot.setAttribute('aria-current', 'false');
+        targetDot.setAttribute('aria-current', 'true');
+    }
+
+    // Next Button
+    nextButton.addEventListener('click', e => {
+        const currentSlide = track.querySelector('.current-slide') || slides[0];
+        let nextSlide = currentSlide.nextElementSibling;
+        const currentDot = dotsNav.querySelector('[aria-current="true"]') || dots[0];
+        let nextDot = currentDot.nextElementSibling;
+
+        // Loop vuelta al principio
+        if (!nextSlide) {
+            nextSlide = slides[0];
+            nextDot = dots[0];
+        }
+
+        moveToSlide(track, currentSlide, nextSlide);
+        updateDots(currentDot, nextDot);
+    });
+
+    // Prev Button
+    prevButton.addEventListener('click', e => {
+        const currentSlide = track.querySelector('.current-slide') || slides[0];
+        let prevSlide = currentSlide.previousElementSibling;
+        const currentDot = dotsNav.querySelector('[aria-current="true"]') || dots[0];
+        let prevDot = currentDot.previousElementSibling;
+
+        // Loop vuelta al final
+        if (!prevSlide) {
+            prevSlide = slides[slides.length - 1];
+            prevDot = dots[dots.length - 1];
+        }
+
+        moveToSlide(track, currentSlide, prevSlide);
+        updateDots(currentDot, prevDot);
+    });
+
+    // Dots
+    dotsNav.addEventListener('click', e => {
+        const targetDot = e.target.closest('button');
+        if (!targetDot) return;
+
+        const currentSlide = track.querySelector('.current-slide') || slides[0];
+        const currentDot = dotsNav.querySelector('[aria-current="true"]') || dots[0];
+        const targetIndex = dots.findIndex(dot => dot === targetDot);
+        const targetSlide = slides[targetIndex];
+
+        moveToSlide(track, currentSlide, targetSlide);
+        updateDots(currentDot, targetDot);
+    });
+
+    // Inicializar clase
+    slides[0].classList.add('current-slide');
+}
+
+/* =========================================
+   4. FUNCIONES UI (Nav, Reveal, etc)
    ========================================= */
 function initNav() {
     const menu = document.querySelector('.nav-links');
@@ -298,9 +401,6 @@ function initGallery() {
     });
 }
 
-/* =========================================
-   4. BUSCADORES (PERFUMES Y OFERTAS)
-   ========================================= */
 function initPerfumesSearch() {
     if (!isOnPage('servicios')) return;
     const inputSearch = document.querySelector('#search-perfume');
@@ -336,7 +436,6 @@ function initPerfumesSearch() {
     if (inputPrice) inputPrice.addEventListener('input', filterPerfumes);
 }
 
-// ESTA ES LA FUNCIÓN QUE FALTABA PARA LAS OFERTAS
 function initOfertas() {
     if (!isOnPage('ofertas')) return;
     const search = document.querySelector('#search-ofertas');
@@ -359,14 +458,10 @@ function initOfertas() {
         });
         if (empty) empty.hidden = visible !== 0;
     }
-    
     [search, min, max].forEach(el => el?.addEventListener('input', apply));
-    apply(); // Ejecutar al inicio
+    apply(); 
 }
 
-/* =========================================
-   5. CONTACTO Y CHATBOT
-   ========================================= */
 function initContacto() {
     if (!isOnPage('contacto')) return;
     const form = document.querySelector('#contacto-form');
@@ -398,16 +493,7 @@ function initChatbot() {
     const input = document.querySelector('#chat-input');
     if (!win || !form || !input) return;
 
-    const optionsText = (
-        'Elegí una opción:\n' +
-        '1) Tecnología\n' +
-        '2) Celulares\n' +
-        '3) Relojes\n' +
-        '4) Perfumes\n' +
-        '5) Ofertas\n' +
-        '6) Ubicación'
-    );
-
+    const optionsText = 'Elegí una opción:\n1) Tecnología\n2) Celulares\n3) Relojes\n4) Perfumes\n5) Ofertas\n6) Ubicación';
     const responses = {
         tech: 'Mirá nuestra sección de <a href="locales.html">Tecnología</a>.',
         celulares: 'Encontrá iPhone y Androids en <a href="gastronomia.html">Celulares</a>.',
@@ -416,7 +502,6 @@ function initChatbot() {
         ofertas: 'Aprovechá los descuentos en <a href="ofertas.html">Ofertas</a>.',
         location: 'Estamos en Palermo Soho, Buenos Aires. ¡Te esperamos!',
     };
-
     const mapToKey = (txt) => {
         const t = (txt || '').trim().toLowerCase();
         if (['1', 'tecnologia', 'tech'].includes(t)) return 'tech';
@@ -459,29 +544,92 @@ function initChatbot() {
         input.focus();
     });
 
-    showMenu(); // Iniciamos el chat
+    showMenu(); 
 }
 
-/* =========================================
-   6. INICIALIZACIÓN
-   ========================================= */
 document.addEventListener('DOMContentLoaded', () => {
     document.body.dataset.page = getPageSlug();
     Array.from(document.querySelectorAll('#year')).forEach(el => el.textContent = new Date().getFullYear());
 
-    // Inicializar componentes
     initNav();
     initReveal();
     initAccordion();
     initGallery();
-    
-    // Inicializar E-commerce y Buscadores
+    initCarousel(); // <--- AHORA SÍ SE INICIA EL CARRUSEL
     injectFloatingCart();
     injectAddButtons();
-    initPerfumesSearch(); // Buscador en Perfumes
-    initOfertas();        // Buscador en Ofertas (¡Ahora sí funcionará!)
+    initPerfumesSearch();
+    initOfertas();
     initContacto();
-    
-    // Inicializar Chatbot
     initChatbot();
+});
+/* =========================================
+   5. SISTEMA DE DETALLE DE PRODUCTOS
+   ========================================= */
+
+// Simulación de Base de Datos
+const productosDB = {
+    "redmi15c": {
+        nombre: "Redmi 15C",
+        precio: 319999,
+        img: "https://imgs.search.brave.com/Ou3ia0SyiKGjDjulvFR9rn4sYlMUu7DviNnFWj9ssGA/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9odHRw/Mi5tbHN0YXRpYy5j/b20vRF9RX05QXzJY/XzY5NjQ1OC1NTEE5/Njg5MTYxNTUzOF8x/MTIwMjUtVi53ZWJw",
+        descripcion: "El Redmi 15C ofrece un rendimiento sólido con su batería de larga duración y pantalla inmersiva. Ideal para el uso diario, fotos nítidas y juegos ligeros.",
+        specs: ["Pantalla: 6.74 pulgadas", "Batería: 5000 mAh", "Cámara: 50MP", "Procesador: Helio G85"]
+    },
+    "redmi14c": {
+        nombre: "Redmi 14C",
+        precio: 279999,
+        img: "https://imgs.search.brave.com/GSbG_YGLSl3fKsdwq7Z4zHs7oqh8WfCSWHvfUY_-L7w/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9odHRw/Mi5tbHN0YXRpYy5j/b20vRF9RX05QXzJY/Xzc0Nzk5NC1NTEE4/MTcwNjk1NDQ5MF8w/MTIwMjUtVi53ZWJw",
+        descripcion: "Un clásico renovado. El Redmi 14C equilibra precio y calidad con un diseño elegante y funcionalidades esenciales para mantenerte conectado.",
+        specs: ["Pantalla: 6.5 pulgadas", "Batería: 4500 mAh", "Cámara: 13MP Dual", "Memoria: 128GB"]
+    },
+    "pococ75": {
+        nombre: "Poco C75",
+        precio: 299999,
+        img: "https://images.fravega.com/f500/64c704b931aa59284221070eb6bb9bb4.jpg",
+        descripcion: "Potencia tu día con el Poco C75. Diseñado para jóvenes que buscan estilo y velocidad a un precio accesible.",
+        specs: ["Pantalla: 90Hz", "Carga Rápida", "Diseño Ultra Fino", "Android 14"]
+    }
+};
+
+function initDetalle() {
+    // Solo ejecutar si estamos en la página de detalle
+    if (!location.pathname.includes('detalle.html')) return;
+
+    // 1. Obtener el ID de la URL (ej: ?id=redmi15c)
+    const params = new URLSearchParams(window.location.search);
+    const id = params.get('id');
+
+    const producto = productosDB[id];
+    const container = document.getElementById('detalle-container');
+
+    // 2. Si no existe el producto, mostrar error
+    if (!producto) {
+        container.innerHTML = "<h2>Producto no encontrado 😢</h2><a href='index.html' class='btn primary'>Volver al inicio</a>";
+        return;
+    }
+
+    // 3. Rellenar la información en el HTML
+    document.getElementById('det-img').src = producto.img;
+    document.getElementById('det-titulo').textContent = producto.nombre;
+    document.getElementById('det-precio').textContent = `$${producto.precio.toLocaleString('es-AR')}`;
+    document.getElementById('det-desc').textContent = producto.descripcion;
+
+    // Rellenar lista de características
+    const ul = document.getElementById('det-specs');
+    producto.specs.forEach(spec => {
+        const li = document.createElement('li');
+        li.textContent = spec;
+        ul.appendChild(li);
+    });
+
+    // Configurar botón de compra
+    const btn = document.getElementById('det-btn-add');
+    btn.onclick = () => addToCart({ nombre: producto.nombre, precio: producto.precio });
+}
+
+// Agregar esto al final del DOMContentLoaded existente en app.js
+document.addEventListener('DOMContentLoaded', () => {
+    // ... tus otras funciones ...
+    initDetalle(); 
 });
