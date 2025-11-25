@@ -11,6 +11,25 @@
     <meta property="og:description" content="Tu tienda exclusiva de tecnología y estilo de vida." />
     <link rel="icon" type="image/png" href="images/favicon.png?v=2" />
     <link rel="stylesheet" href="style.css" />
+
+    <style>
+        .card .media {
+            background-color: #ffffff; /* Fondo blanco para resaltar el producto */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px; /* Un poco de aire */
+        }
+        .card .media img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain; /* IMPORTANTE: Muestra el producto entero sin cortarlo */
+            transition: transform 0.3s ease;
+        }
+        .card:hover .media img {
+            transform: scale(1.05); /* Efecto zoom suave al pasar el mouse */
+        }
+    </style>
 </head>
 
 <body data-page="inicio">
@@ -54,9 +73,9 @@
                 <div class="panel reveal">
                     <h3 class="mb-6">Novedades</h3>
                     <ul class="stack mt-6">
-                        <li><span class="badge">Nuevo</span> Ingreso de <strong>iPhone 15 Pro</strong>.</li>
-                        <li><span class="badge">Promo</span> 20% OFF en <strong>Vapes GeekBar</strong> llevando 2 unidades.</li>
-                        <li><span class="badge">Lanzamiento</span> Nueva línea de perfumes <strong>Dior Sauvage</strong>.</li>
+                        <li><span class="badge">Nuevo</span> Ingreso de <strong>iPhone 16 Pro Max</strong>.</li>
+                        <li><span class="badge">Promo</span> 20% OFF en <strong>Perfumes </strong> llevando 2 unidades.</li>
+                        <li><span class="badge">Lanzamiento</span> Nueva línea de Maquinas de afeitar <strong> ¡Resistente al Agua!</strong>.</li>
                     </ul>
                 </div>
             </div>
@@ -66,30 +85,40 @@
             <div class="container stack">
                 <h2 class="reveal">Categorías Destacadas</h2>
                 <div class="showcase">
+                    
                     <article class="card reveal span-4">
-                        <div class="media"><img src="images/hero1.jpg" alt="Notebooks y Gadgets"></div>
+                        <div class="media">
+                            <img src="https://pngimg.com/d/macbook_PNG65.png" alt="Notebooks y Gadgets">
+                        </div>
                         <div class="body">
                             <h3>Tecnología</h3>
                             <p class="meta">Notebooks, tablets, audio y periféricos gamer.</p>
                             <a class="btn primary" href="locales.html">Ir a Tecnología</a>
                         </div>
                     </article>
+
                     <article class="card reveal span-4">
-                        <div class="media"><img src="images/hero2.jpg" alt="Smartphones modernos"></div>
+                        <div class="media">
+                            <img src="https://www.apple.com/v/iphone-17-pro/c/images/overview/contrast/iphone_17_pro__dwccrdina7qu_large_2x.jpg" alt="Smartphones modernos">
+                        </div>
                         <div class="body">
                             <h3>Celulares</h3>
                             <p class="meta">Apple, Samsung, Xiaomi y accesorios premium.</p>
                             <a class="btn primary" href="gastronomia.html">Ver Celulares</a>
                         </div>
                     </article>
+
                     <article class="card reveal span-4">
-                        <div class="media"><img src="images/hero3.jpg" alt="Relojes de lujo"></div>
+                        <div class="media">
+                            <img src="https://modwatches.netlify.app/img/relojgmtmaster1.png" alt="Relojes de lujo">
+                        </div>
                         <div class="body">
                             <h3>Relojes</h3>
                             <p class="meta">Alta gama, smartwatches y clásicos.</p>
                             <a class="btn primary" href="entretenimientos.html">Ver Relojes</a>
                         </div>
                     </article>
+
                 </div>
             </div>
         </section>
@@ -97,8 +126,8 @@
         <section class="section">
             <div class="container grid grid-aside">
                 <div class="stack reveal">
-                    <h2>Perfumes y Vapes</h2>
-                    <p class="text-muted">Descubrí nuestra selección exclusiva de fragancias importadas y los mejores dispositivos de vapeo del mercado.</p>
+                    <h2>Perfumes</h2>
+                    <p class="text-muted">Descubrí nuestra selección exclusiva de fragancias importadas</p>
                     <a class="btn ghost" href="servicios.html">Ver catálogo →</a>
                 </div>
                 <aside class="panel reveal">
